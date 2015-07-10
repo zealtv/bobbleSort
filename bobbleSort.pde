@@ -6,6 +6,7 @@ int column = 0;
 int threshold = 50;
 
 
+
 //---------------------------------------------------
 void setup()
 {
@@ -14,6 +15,7 @@ void setup()
   size( image.width, image.height );
   image( image, 0, 0 );
 }
+
 
 
 //---------------------------------------------------
@@ -35,21 +37,40 @@ void draw()
 }
 
 
+
 //---------------------------------------------------
 void sortColumn()
 {
-  int x = column;
-  int yStart = 0;
-  int yEnd = image.height;
-  int sortLength = yEnd - yStart;
+  color[] columnArray = new color[image.height];
+
+   
+  //load column into pixel array
+  for( int i = 0; i < image.height; i++ ) 
+    columnArray[i] = image.pixels[ column + i * image.width ];
   
+  
+  //SORT
+  columnArray = sort( columnArray );
+  
+  
+  //load array into pixels
+  for( int i = 0; i < image.height; i++ ) 
+    image.pixels[ column + i * image.width ] = columnArray[i];
+  
+}
+
+
+
+//---------------------------------------------------
+void sortColumnSegment( int yStart, int sortLength )
+{ 
   color[] unsorted = new color[sortLength];
   color[] sorted = new color[sortLength];
   
   
   //load image pixels into array
   for( int i = 0; i < sortLength; i++ ) 
-    unsorted[i] = image.pixels[ x + ( yStart + i ) * image.width];
+    unsorted[i] = image.pixels[ column + ( yStart + i ) * image.width];
   
   
   //SORT
@@ -58,26 +79,37 @@ void sortColumn()
   
   //load array into pixels
   for( int i = 0; i < sortLength; i++ ) 
-    image.pixels[ x + (yStart + i) * image.width ] = sorted[i];
-  
+    image.pixels[ column + (yStart + i) * image.width ] = sorted[i];
 }
+
 
 
 //---------------------------------------------------
 void sortRow()
 {
-  int xStart = 0;
-  int y = row;
-  int xEnd = image.width;
-  int sortLength = xEnd - xStart;
+  //get row
+  color rowArray[] = subset( image.pixels, row * image.width, image.width );
   
+  //sort row
+  rowArray = sort( rowArray );
+  
+  //put row back
+  for( int i = 0; i < image.width; i++ )
+    image.pixels[ i + (row * image.width) ] = rowArray[i];
+}
+
+
+
+//---------------------------------------------------
+void sortRowSegment( int xStart, int sortLength )
+{
   color unsorted[] = new color[sortLength];
   color sorted[] = new color[sortLength];
   
   
   //load image pixels into array
   for( int i = 0; i < sortLength; i++ ) 
-    unsorted[i] = image.pixels[ xStart + i + (y * image.width) ]; 
+    unsorted[i] = image.pixels[ xStart + i + (row * image.width) ]; 
   
   
   //SORT
@@ -86,6 +118,5 @@ void sortRow()
   
   //load array into pixels
   for( int i = 0; i < sortLength; i++ ) 
-    image.pixels[ xStart + i + (y * image.width) ] = sorted[i];
-  
+    image.pixels[ xStart + i + (row * image.width) ] = sorted[i];
 }
